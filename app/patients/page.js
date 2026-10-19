@@ -1,5 +1,6 @@
 import FormShell from '../../components/FormShell';
 import RegistrationForm, { Field, FormSection, PatientTestFields } from '../../components/RegistrationForm';
+import tests from './tests.json';
 
 export default function PatientsPage() {
   return <FormShell eyebrow="PATIENT RECORDS" title="Patient Registration" description="Register a patient and record their contact and test details." number="01">
@@ -16,7 +17,7 @@ export default function PatientsPage() {
       <hr className="form-divider" />
       <FormSection title="Registration & test details">
         <Field label="Registration date" name="registrationDate" type="date" required />
-        <PatientTestFields />
+        <PatientTestFields tests={tests} />
       </FormSection>
     </RegistrationForm>
   </FormShell>;

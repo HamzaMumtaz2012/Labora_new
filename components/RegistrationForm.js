@@ -23,60 +23,26 @@ export function Field({
 
 export function FormSection({ title, children }) { return <><p className="form-section-title">{title}</p><div className="fields">{children}</div></>; }
 
-export function PatientTestFields() {
-  const [tests, setTests] = useState([]);
-  const [selectedTestId, setSelectedTestId] = useState('');
-  const [loadError, setLoadError] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadTests() {
-      try {
-        const response = await fetch('/api/services');
-        const result = await response.json().catch(() => null);
-        if (!response.ok || !result?.success) {
-          throw new Error(result?.error || `Could not load tests (${response.status}).`);
-        }
-        if (!Array.isArray(result.data)) {
-          throw new Error('The test catalogue response is invalid.');
-        }
-        if (!cancelled) {
-          setTests(result.data.filter(test => (!test.status || test.status === 'Available') && test.doctor));
-          setLoadError('');
-        }
-      } catch (error) {
-        if (!cancelled) setLoadError(error.message || 'Could not load the test catalogue.');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    loadTests();
-    return () => { cancelled = true; };
-  }, []);
-
-  const selectedTest = tests.find(test => test._id === selectedTestId);
-  const resetSelection = useCallback(() => setSelectedTestId(''), []);
+export function PatientTestFields({ tests }) {
+  const [selectedTestCode, setSelectedTestCode] = useState('');
+  const selectedTest = tests.find(test => test.testCode === selectedTestCode);
+  const resetSelection = useCallback(() => setSelectedTestCode(''), []);
   const options = tests.map(test => ({
-    value: test._id,
-    label: test.serviceName,
+    value: test.testCode,
+    label: test.testName,
   }));
 
   return <>
     <Field
       label="Required test"
-      name="serviceId"
+      name="testCode"
       options={options}
       required
-      disabled={loading || !!loadError || tests.length === 0}
-      value={selectedTestId}
-      onChange={event => setSelectedTestId(event.target.value)}
-      helper={loadError || (loading ? 'Loading available tests…' : tests.length === 0 ? 'Add an available test with its assigned doctor in Products & Services first.' : undefined)}
+      value={selectedTestCode}
+      onChange={event => setSelectedTestCode(event.target.value)}
     />
     <Field label="Price (PKR)" name="price" type="number" min="0" step="0.01" value={selectedTest?.price ?? ''} disabled helper="Price is set by the selected test" />
-    <Field label="Doctor" name="doctor" value={selectedTest?.doctor ?? ''} disabled helper="Assigned automatically from the selected test" />
+    <Field label="Doctor" name="doctor" value={selectedTest?.doctorName ?? ''} disabled helper="Assigned automatically from the selected test" />
     <Field label="Patient status" name="status" options={['Active', 'Pending', 'Completed', 'Inactive']} />
     <ResetHandler onReset={resetSelection} />
   </>;
@@ -84,7 +50,7 @@ export function PatientTestFields() {
 
 function ResetHandler({ onReset }) {
   useEffect(() => {
-    const form = document.getElementById('serviceId')?.form;
+    const form = document.getElementById('testCode')?.form;
     if (!form) return undefined;
     form.addEventListener('reset', onReset);
     return () => form.removeEventListener('reset', onReset);

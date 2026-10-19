@@ -1,0 +1,38 @@
+[
+  {
+    "testName": "Complete Blood Count (CBC)",
+    "testCode": "CBC",
+    "doctorName": "Dr. Ali",
+    "price": 1200
+  },
+  {
+    "testName": "Blood Glucose",
+    "testCode": "GLU",
+    "doctorName": "Dr. Ahmed",
+    "price": 500
+  },
+  {
+    "testName": "Lipid Profile",
+    "testCode": "LIPID",
+    "doctorName": "Dr. Amir",
+    "price": 1500
+  },
+  {
+    "testName": "Liver Function Test",
+    "testCode": "LFT",
+    "doctorName": "Dr. Anus",
+    "price": 1800
+  },
+  {
+    "testName": "Urine Complete Examination",
+    "testCode": "UCE",
+    "doctorName": "Dr. Ammar",
+    "price": 700
+  },
+  {
+    "testName": "Other",
+    "testCode": "OTHER",
+    "doctorName": "Dr. Ayan",
+    "price": 1000
+  }
+]

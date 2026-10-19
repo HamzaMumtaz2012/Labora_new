@@ -19,7 +19,7 @@ MONGODB_DB=labora
 Replace placeholders with your real Atlas connection string. Never commit `.env.local` to GitHub.
 4. Run `npm run dev`, then open http://localhost:3000. Pages: `/patients`, `/employees`, `/services`.
 
-Create each laboratory test in `/services` with its own price and assigned doctor before registering patients. The patient form loads available configured tests and automatically fills the selected test's price and doctor. The patient API looks up the selected test and saves its configured price and doctor rather than trusting edited form values.
+Patient tests, prices, and assigned doctors come from [app/patients/tests.json](./app/patients/tests.json), not the database or the `/services` page. Update this JSON file to change the test list or prices. The patient form automatically displays the selected test's price and doctor in disabled fields; the patient API also saves those values from the JSON configuration.
 
 ## Postman API endpoints
 | Method | URL | Purpose |
@@ -31,7 +31,7 @@ Create each laboratory test in `/services` with its own price and assigned docto
 
 For POST: choose **Body → raw → JSON** and add header `Content-Type: application/json`. Sample patient body:
 ```json
-{"patientName":"Ali Khan","gender":"Male","phone":"03001234567","registrationDate":"2026-10-18","serviceId":"<service _id returned by GET /api/services>","status":"Pending"}
+{"patientName":"Ali Khan","gender":"Male","phone":"03001234567","registrationDate":"2026-10-18","testCode":"CBC","status":"Pending"}
 ```
 Employee body:
 ```json
@@ -42,7 +42,7 @@ Service body:
 {"serviceName":"Complete Blood Count (CBC)","category":"Hematology","doctor":"Dr. Sara Ahmed","price":1200,"sampleType":"Blood","status":"Available"}
 ```
 
-For a patient POST, replace the `serviceId` placeholder with the selected service's `_id` from `GET /api/services`; the API saves that test's configured price and doctor.
+For a patient POST, set `testCode` to one of the codes in `app/patients/tests.json`; the API saves that test's configured price and doctor.
 Successful POST returns HTTP 201 and `success: true`; GET returns a `data` array. Missing DB configuration returns a JSON error, not a fake success.
 
 ## MongoDB Atlas

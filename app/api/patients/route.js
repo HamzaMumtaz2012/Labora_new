@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import tests from "../../patients/tests.json";
 import { getCollection, apiError } from "../../../lib/mongodb";
 import { cleanRecord, validateRequired } from "../../../lib/records";
 export const runtime = "nodejs";
@@ -11,10 +11,7 @@ const fields = [
   "email",
   "address",
   "registrationDate",
-  "serviceId",
-  "doctor",
-  "service",
-  "price",
+  "testCode",
   "status",
 ];
 export async function GET() {
@@ -38,61 +35,19 @@ export async function POST(request) {
       "gender",
       "phone",
       "registrationDate",
+      "testCode",
     ]);
     if (issue)
       return Response.json({ success: false, error: issue }, { status: 400 });
-    if (record.serviceId) {
-      if (!ObjectId.isValid(record.serviceId))
-        return Response.json(
-          { success: false, error: "Please select a valid test." },
-          { status: 400 },
-        );
-      const services = await getCollection("services");
-      const service = await services.findOne({
-        _id: new ObjectId(record.serviceId),
-      });
-      if (!service)
-        return Response.json(
-          {
-            success: false,
-            error: "The selected test no longer exists. Refresh the page and select another test.",
-          },
-          { status: 404 },
-        );
-      if (service.status && service.status !== "Available")
-        return Response.json(
-          { success: false, error: "The selected test is not available." },
-          { status: 400 },
-        );
-      if (!service.doctor)
-        return Response.json(
-          {
-            success: false,
-            error: "This test has no assigned doctor. Add its doctor in Products & Services first.",
-          },
-          { status: 400 },
-        );
-      const servicePrice = Number(service.price);
-      if (!Number.isFinite(servicePrice) || servicePrice < 0)
-        return Response.json(
-          {
-            success: false,
-            error: "The selected test has an invalid price. Correct its price in Products & Services first.",
-          },
-          { status: 400 },
-        );
-      record.service = service.serviceName;
-      record.price = servicePrice;
-      record.doctor = service.doctor;
-    } else if (record.price !== undefined) {
-      const price = Number(record.price);
-      if (!Number.isFinite(price) || price < 0)
-        return Response.json(
-          { success: false, error: "Price must be a valid non-negative number." },
-          { status: 400 },
-        );
-      record.price = price;
-    }
+    const selectedTest = tests.find((test) => test.testCode === record.testCode);
+    if (!selectedTest)
+      return Response.json(
+        { success: false, error: "Please select a valid test." },
+        { status: 400 },
+      );
+    record.service = selectedTest.testName;
+    record.price = selectedTest.price;
+    record.doctor = selectedTest.doctorName;
     record.createdAt = new Date();
     record.updatedAt = new Date();
     const c = await getCollection("patients");
@@ -104,7 +59,6 @@ export async function POST(request) {
         data: {
           ...record,
           _id: String(result.insertedId),
-          serviceId: record.serviceId,
           patientId: `PAT-${String(result.insertedId).slice(-6).toUpperCase()}`,
         },
       },
