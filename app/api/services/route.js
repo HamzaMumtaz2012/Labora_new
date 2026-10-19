@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 const fields = [
   "serviceName",
   "category",
+  "doctor",
   "sampleType",
   "price",
   "turnaroundTime",
@@ -33,6 +34,7 @@ export async function POST(request) {
     const issue = validateRequired(record, [
       "serviceName",
       "category",
+      "doctor",
       "price",
     ]);
     if (issue)

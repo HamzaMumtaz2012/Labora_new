@@ -19,6 +19,8 @@ MONGODB_DB=labora
 Replace placeholders with your real Atlas connection string. Never commit `.env.local` to GitHub.
 4. Run `npm run dev`, then open http://localhost:3000. Pages: `/patients`, `/employees`, `/services`.
 
+Create each laboratory test in `/services` with its own price and assigned doctor before registering patients. The patient form loads available configured tests and automatically fills the selected test's price and doctor. The patient API looks up the selected test and saves its configured price and doctor rather than trusting edited form values.
+
 ## Postman API endpoints
 | Method | URL | Purpose |
 |---|---|---|
@@ -29,7 +31,7 @@ Replace placeholders with your real Atlas connection string. Never commit `.env.
 
 For POST: choose **Body → raw → JSON** and add header `Content-Type: application/json`. Sample patient body:
 ```json
-{"patientName":"Ali Khan","gender":"Male","phone":"03001234567","registrationDate":"2026-10-18","service":"Complete Blood Count (CBC)","status":"Pending"}
+{"patientName":"Ali Khan","gender":"Male","phone":"03001234567","registrationDate":"2026-10-18","serviceId":"<service _id returned by GET /api/services>","status":"Pending"}
 ```
 Employee body:
 ```json
@@ -37,8 +39,10 @@ Employee body:
 ```
 Service body:
 ```json
-{"serviceName":"Complete Blood Count (CBC)","category":"Hematology","price":1200,"sampleType":"Blood","status":"Available"}
+{"serviceName":"Complete Blood Count (CBC)","category":"Hematology","doctor":"Dr. Sara Ahmed","price":1200,"sampleType":"Blood","status":"Available"}
 ```
+
+For a patient POST, replace the `serviceId` placeholder with the selected service's `_id` from `GET /api/services`; the API saves that test's configured price and doctor.
 Successful POST returns HTTP 201 and `success: true`; GET returns a `data` array. Missing DB configuration returns a JSON error, not a fake success.
 
 ## MongoDB Atlas
