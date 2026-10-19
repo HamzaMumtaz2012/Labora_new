@@ -75,8 +75,8 @@ export function PatientTestFields() {
       onChange={event => setSelectedTestId(event.target.value)}
       helper={loadError || (loading ? 'Loading available tests…' : tests.length === 0 ? 'Add an available test with its assigned doctor in Products & Services first.' : undefined)}
     />
-    <Field label="Price (PKR)" name="price" type="number" min="0" step="0.01" value={selectedTest?.price ?? ''} readOnly helper="Price is set by the selected test" />
-    <Field label="Doctor" name="doctor" value={selectedTest?.doctor ?? ''} readOnly helper="Assigned automatically from the selected test" />
+    <Field label="Price (PKR)" name="price" type="number" min="0" step="0.01" value={selectedTest?.price ?? ''} disabled helper="Price is set by the selected test" />
+    <Field label="Doctor" name="doctor" value={selectedTest?.doctor ?? ''} disabled helper="Assigned automatically from the selected test" />
     <Field label="Patient status" name="status" options={['Active', 'Pending', 'Completed', 'Inactive']} />
     <ResetHandler onReset={resetSelection} />
   </>;
